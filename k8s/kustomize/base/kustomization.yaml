@@ -6,13 +6,3 @@ resources:
   - deployment.yaml
   - service.yaml
 
-#secretGenerator:
-#  - name: bg-secret
-#    literals:
-#      - username=root
-#      - password=toor
-
-images:
-  - name: nginx
-    newName: ${IMAGE_NAME}
-    newTag: ${IMAGE_TAG}
