@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: blue-green
+  name: blue-green
+  namespace: default
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: blue-green
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: blue-green
+    spec:
+      containers:
+        - image: hakanyedibela/blue-green-app:latest
+          name: hakanyedibela/blue-green-app
+          resources:
+            limits:
+              cpu: "4000"
+              memory: "6Gb"
+            requests:
+              cpu: "2000"
+              memory: "4Gb"
+          volumeMounts:
+            - mountPath: /config
+              name: bg-config-prod
+      volumes:
+        - name: bg-config-prod
+          configMap:
+            name: bg-config-prod

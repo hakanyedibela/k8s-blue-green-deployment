@@ -11,15 +11,36 @@ configMapGenerator:
     envs:
       - .env
     options:
-      disableNameSuffixHash: true
+      disableNameSuffixHash: false
 
 labels:
   - pairs:
-      env: blue-green-dev
+      env: development
 
-namePrefix: dev-
+images:
+  - name: default
+    newName: hakanyedibela/blue-green-app
+    newTag: v1.0.0
 
 patches:
-  - path: namespace-dev.yaml
+  - target:
+      kind: Service
+      name: blue-green
+      version: v1
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: blue-green-svc
+  - target:
+      kind: Deployment
+      name: blue-green
+      version: v1
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: blue-green-deploy
+
+patches:
   - path: deployment-dev.yaml
   - path: service-dev.yaml
+  - path: namespace-dev.yaml

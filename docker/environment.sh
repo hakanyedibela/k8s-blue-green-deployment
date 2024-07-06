@@ -11,14 +11,15 @@ PROJECT_NAME=$(./mvnw help:evaluate -Dexpression=project.name -q -DforceStdout)
 #PROJECT_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 # Push the image to local minikube registry
-LOCAL_ENV="$(minikube ip):5000"
+#LOCAL_ENV="$(minikube ip):5000"
+PERSONAL_ENV="docker.io/hakanyedibela/blue-green-app"
 
 # Push the image to AWS EC2 registry
 CLOUD_ENV="public.ecr.aws/123456"
 
-if [ "local" = "${BUILD_ARG}" ];
+if [ "personal" = "${BUILD_ARG}" ];
 then
-  BUILD_ENVIRONMENT=$LOCAL_ENV
+  BUILD_ENVIRONMENT=$PERSONAL_ENV
 elif [ "cloud" = "${BUILD_ARG}" ];
 then
   BUILD_ENVIRONMENT=$CLOUD_ENV
