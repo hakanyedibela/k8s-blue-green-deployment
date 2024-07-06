@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+namespace: bg-dev
+
+configMapGenerator:
+  - name: bg-config-dev
+    envs:
+      - .env
+    options:
+      disableNameSuffixHash: true
+
+labels:
+  - pairs:
+      env: blue-green-dev
+
+namePrefix: dev-
+
+patches:
+  - path: namespace-dev.yaml
+  - path: deployment-dev.yaml
+  - path: service-dev.yaml

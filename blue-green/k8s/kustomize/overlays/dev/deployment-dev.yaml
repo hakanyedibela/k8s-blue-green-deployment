@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: blue-green-deploy
+  name: blue-green-deploy
+  namespace: blue-green
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: blue-green-deploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: blue-green-deploy
+    spec:
+      containers:
+        - image: nginx
+          name: nginx
+          resources:
+            limits:
+              cpu: "2000"
+              memory: "4Gb"
+            requests:
+              cpu: "1000"
+              memory: "2Gb"
+          volumeMounts:
+            - mountPath: /config
+              name: bg-vol
+      volumes:
+        - name: bg-vol
+          configMap:
+            name: bg-config
