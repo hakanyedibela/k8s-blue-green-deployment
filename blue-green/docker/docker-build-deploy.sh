@@ -23,3 +23,6 @@ echo "$BUILD_ARG"
 source environment.sh
 docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE} .
 docker push ${IMAGE_NAME}:${IMAGE_TAG}
+
+export DEPLOY_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
+echo "DEPLOYMENT IMAGE: ${DEPLOY_IMAGE}"

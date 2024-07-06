@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: blue-green-svc
+  name: blue-green-svc
+spec:
+  clusterIP: None
+  selector:
+    app: blue-green-svc
+  type: ClusterIP
+status:
+  loadBalancer: {}

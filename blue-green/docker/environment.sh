@@ -11,7 +11,7 @@ PROJECT_NAME=$(./mvnw help:evaluate -Dexpression=project.name -q -DforceStdout)
 #PROJECT_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 # Push the image to local minikube registry
-LOCAL_ENV="localhost:5000"
+LOCAL_ENV="$(minikube ip):5000"
 
 # Push the image to AWS EC2 registry
 CLOUD_ENV="public.ecr.aws/123456"
