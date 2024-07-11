@@ -1,103 +1,50 @@
-# blue-green
+# Blue Green Deployment in Kubernetes
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This is a simple explaination of how to drive blue-green deployment in K8S.
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+## Steps to create a simple blue-green deployment
 
-## Running the application in dev mode
+### 1. Create blue-green namespace
 
-You can run your application in dev mode that enables live coding using:
-
-```shell script
-./mvnw compile quarkus:dev
+```Shell
+kubectl create ns blue-green
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+### 2. Create blue-deploy.yaml
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
+```Shell
+kubectl apply -f blue-deploy.yaml
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+### 3. Expose blue-deploy deployment
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+```Shell
+kubectl expose deploy blue-deploy -n blue-green --port=18080 --name=stable-svc 
+```
+Check if everything is running fine and test against the service endpoint of the deployment for example with temp busybox container
 
-If you want to build an _über-jar_, execute the following command:
+### 4. Create green-deploy deployment
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```Shell
+kubectl apply -f green-deploy.yaml
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+### 5. Expose a test svc 
+Creating a test svc to test the green deployment. Like this the stable-svc in the previous step is still untouched.
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
+```Shell
+kubectl expose deploy green-deploy -n blue-green --port=18080 --name=test-svc 
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+Test also the new green deployment. If everthing is fine, delet it.
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+```Shell
+kubectl delete svc test-svc -n blue-green
 ```
 
-You can then execute your native executable with: `./target/blue-green-1.0-SNAPSHOT-runner`
+### 6. Replace blue deployment with green deployment
+```Shell
+kubectl delete svc stable-svc -n blue-green; kubectl expose deploy green-deploy -n blue-green --port=18080 --name=stable-svc
+```
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
-
-## Related Guides
-
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and
-  Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on
-  it.
-- Hibernate ORM ([guide](https://quarkus.io/guides/hibernate-orm)): Define your persistent model with Hibernate ORM and
-  Jakarta Persistence
-- YAML Configuration ([guide](https://quarkus.io/guides/config-yaml)): Use YAML to configure your Quarkus application
-- Logging JSON ([guide](https://quarkus.io/guides/logging#json-logging)): Add JSON formatter for console logging
-- JDBC Driver - MySQL ([guide](https://quarkus.io/guides/datasource)): Connect to the MySQL database via JDBC
-- Micrometer metrics ([guide](https://quarkus.io/guides/micrometer)): Instrument the runtime and your application with
-  dimensional metrics using Micrometer.
-- Micrometer Registry Prometheus ([guide](https://quarkus.io/guides/micrometer)): Enable Prometheus support for
-  Micrometer
-- Reactive MySQL client ([guide](https://quarkus.io/guides/reactive-sql-clients)): Connect to the MySQL database using
-  the reactive pattern
-- JDBC Driver - H2 ([guide](https://quarkus.io/guides/datasource)): Connect to the H2 database via JDBC
-- Hibernate Validator ([guide](https://quarkus.io/guides/validation)): Validate object properties (field, getter) and
-  method parameters for your beans (REST, CDI, Jakarta Persistence)
-- Liquibase ([guide](https://quarkus.io/guides/liquibase)): Handle your database schema migrations with Liquibase
-
-## Provided Code
-
-### YAML Config
-
-Configure your application with YAML
-
-[Related guide section...](https://quarkus.io/guides/config-reference#configuration-examples)
-
-The Quarkus application configuration is located in `src/main/resources/application.yml`.
-
-### gRPC
-
-Create your first gRPC service
-
-[Related guide section...](https://quarkus.io/guides/grpc-getting-started)
-
-### Hibernate ORM
-
-Create your first JPA entity
-
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+The deleted stable-svc have to be created again with the same name, but now for the green deployment. 
