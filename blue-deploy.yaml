@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: blue-deploy
+  name: blue-deploy
+  namespace: blue-green
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: blue-deploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: blue-deploy
+    spec:
+      containers:
+      - image: hakanyedibela/go-app:1.0.0
+        name: go-app
+        resources: {}
+status: {}
