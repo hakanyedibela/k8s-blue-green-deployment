@@ -1,0 +1,18 @@
+# Test traffic. Always points at the idle colour, so the next release can be
+# tested in-cluster before it receives production traffic.
+apiVersion: v1
+kind: Service
+metadata:
+  name: preview-svc
+  namespace: blue-green
+  labels:
+    app: go-app
+spec:
+  type: ClusterIP
+  selector:
+    app: go-app
+    version: green
+  ports:
+  - name: http
+    port: 80
+    targetPort: http

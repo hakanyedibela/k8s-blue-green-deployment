@@ -1,0 +1,18 @@
+# Production traffic. Lives for the whole lifetime of the app and is never
+# deleted. A release is a patch of spec.selector.version (blue <-> green).
+apiVersion: v1
+kind: Service
+metadata:
+  name: stable-svc
+  namespace: blue-green
+  labels:
+    app: go-app
+spec:
+  type: ClusterIP
+  selector:
+    app: go-app
+    version: blue
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
